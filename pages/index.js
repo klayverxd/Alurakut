@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
@@ -27,6 +27,29 @@ function ProfileSidebar(props) {
 
 			<AlurakutProfileSidebarMenuDefault />
 		</Box>
+	)
+}
+
+function ProfileRelationsBox({ items, title }) {
+	return (
+		<ProfileRelationsBoxWrapper>
+			<h2 className="smallTitle">
+				{title} ({items.length})
+			</h2>
+
+			{/* <ul>
+				{items.map(item => {
+					return (
+						<li key={item}>
+							<a href={`/users/${item}`}>
+								<img src={item} />
+								<span>{item}</span>
+							</a>
+						</li>
+					)
+				})}
+			</ul> */}
+		</ProfileRelationsBoxWrapper>
 	)
 }
 
@@ -77,6 +100,19 @@ export default function Home() {
 		'LaisFSGomes',
 		'jessicaMarquess',
 	]
+
+	const [followers, setFollowers] = useState([])
+
+	useEffect(() => {
+		fetch('https://api.github.com/users/klayverxd/followers')
+			.then(res => {
+				return res.json()
+			})
+			.then(res => {
+				console.log(res)
+				setFollowers(res)
+			})
+	}, [])
 
 	function handleCreateComunity(e) {
 		e.preventDefault()
@@ -132,6 +168,7 @@ export default function Home() {
 					className="profileRelationsArea"
 					style={{ gridArea: 'profileRelationsArea' }}
 				>
+					<ProfileRelationsBox items={followers} title="Seguidores" />
 					<ProfileRelationsBoxWrapper>
 						<h2 className="smallTitle">Comunidades ({communities.length})</h2>
 
