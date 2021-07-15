@@ -69,16 +69,17 @@ export default function Home() {
 		'jessicaMarquess',
 	]
 	const [followers, setFollowers] = useState([])
+	const [creatingCommunity, setCreatingCommunity] = useState(false)
 
 	const [formCreateCommunity, setFormCreateCommunity] = useState({
 		title: '',
 		imageUrl: '',
 	})
 
-	const handleFormCreateCommunity = prop => event => {
+	const handleFormCreateCommunity = event => {
 		setFormCreateCommunity({
 			...formCreateCommunity,
-			[prop]: event.target.value,
+			[event.target.name]: event.target.value,
 		})
 	}
 
@@ -119,6 +120,7 @@ export default function Home() {
 	}, [])
 
 	function handleCreateComunity(e) {
+		setCreatingCommunity(true)
 		e.preventDefault()
 
 		const community = {
@@ -139,6 +141,7 @@ export default function Home() {
 				title: '',
 				imageUrl: '',
 			})
+			setCreatingCommunity(false)
 		})
 	}
 
@@ -166,20 +169,24 @@ export default function Home() {
 									name="title"
 									aria-label="Qual vai ser o nome da sua comunidade?"
 									value={formCreateCommunity.title}
-									onChange={handleFormCreateCommunity('title')}
+									onChange={handleFormCreateCommunity}
 								/>
 							</div>
 							<div>
 								<input
 									type="text"
 									placeholder="Coloque o URL para usarmos de capa"
-									name="image"
+									name="imageUrl"
 									aria-label="Coloque o URL para usarmos de capa"
 									value={formCreateCommunity.imageUrl}
-									onChange={handleFormCreateCommunity('imageUrl')}
+									onChange={handleFormCreateCommunity}
 								/>
 							</div>
-							<button>Criar comunidade</button>
+							<button>
+								{creatingCommunity
+									? 'Criando comunidade...'
+									: 'Criar comunidade'}
+							</button>
 						</form>
 					</Box>
 				</div>
