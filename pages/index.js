@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import nookies from 'nookies'
+import jwt from 'jsonwebtoken'
 
 import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
@@ -57,8 +59,8 @@ function ProfileRelationsBox({ items, title }) {
 	)
 }
 
-export default function Home() {
-	const githubUser = 'klayverxd'
+export default function Home(props) {
+	const githubUser = props.githubUser
 	const [communities, setCommunities] = useState([])
 	const pessoasFavoritas = [
 		'alannapaiva',
@@ -67,6 +69,15 @@ export default function Home() {
 		'RogVenancio',
 		'LaisFSGomes',
 		'jessicaMarquess',
+		'luanmooraes',
+		'rafaelizidorio',
+		'EmmanuelMoreira7',
+		'Pedynho',
+		'willianpraciano',
+		'Krymancer',
+		'netosouza22',
+		'thainarapenha',
+		'Fabriciox7',
 	]
 	const [followers, setFollowers] = useState([])
 	const [creatingCommunity, setCreatingCommunity] = useState(false)
@@ -97,7 +108,7 @@ export default function Home() {
 		fetch('https://graphql.datocms.com/', {
 			method: 'POST',
 			headers: {
-				Authorization: 'fb9583068205775106a0d01df0e196',
+				Authorization: '6c4d6ddb486be81d5454d74121ca1e',
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
 			},
@@ -107,7 +118,7 @@ export default function Home() {
 				  id
 				  title
 				  imageUrl
-				  creatorSlug
+				  creatorslug
 				}
 			  }`,
 			}),
@@ -125,7 +136,7 @@ export default function Home() {
 
 		const community = {
 			...formCreateCommunity,
-			creatorSlug: githubUser,
+			creatorslug: githubUser,
 		}
 
 		fetch('/api/communities', {
@@ -194,7 +205,6 @@ export default function Home() {
 					className="profileRelationsArea"
 					style={{ gridArea: 'profileRelationsArea' }}
 				>
-					<ProfileRelationsBox items={followers} title="Seguidores" />
 					<ProfileRelationsBoxWrapper>
 						<h2 className="smallTitle">Comunidades ({communities.length})</h2>
 
@@ -229,8 +239,40 @@ export default function Home() {
 							})}
 						</ul>
 					</ProfileRelationsBoxWrapper>
+					<ProfileRelationsBox items={followers} title="Seguidores" />
 				</div>
 			</MainGrid>
 		</>
 	)
+}
+
+export async function getServerSideProps(context) {
+	const cookies = nookies.get(context)
+	const token = cookies.USER_TOKEN
+
+	const { isAuthenticated } = await fetch(
+		'https://alurakut.vercel.app/api/auth',
+		{
+			headers: {
+				Authorization: token,
+			},
+		}
+	).then(resposta => resposta.json())
+
+	if (isAuthenticated) {
+		return {
+			redirect: {
+				destination: '/login',
+				permanent: false,
+			},
+		}
+	}
+
+	const { githubUser } = jwt.decode(token)
+
+	return {
+		props: {
+			githubUser,
+		},
+	}
 }
